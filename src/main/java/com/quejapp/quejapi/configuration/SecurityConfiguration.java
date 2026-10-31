@@ -1,5 +1,7 @@
 package com.quejapp.quejapi.configuration;
+
 import java.util.Arrays;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -36,6 +38,10 @@ public class SecurityConfiguration {
 
     // Componente que valida las credenciales del usuario
     private final AuthenticationProvider authenticationProvider;
+
+    // Inyecta la variable CORS_ALLOWED_ORIGINS definida en Render / application.properties
+    @Value("${CORS_ALLOWED_ORIGINS:http://localhost:4200}")
+    private String allowedOrigins;
 
     /** SecurityFilterChain Define cómo Spring Security debe proteger la aplicación. */
 
@@ -102,10 +108,11 @@ public class SecurityConfiguration {
 
         CorsConfiguration configuration = new CorsConfiguration();
 
-        // Orígenes permitidos (frontend)
+        // Orígenes permitidos (frontend local, vercel y variable de entorno)
         configuration.setAllowedOrigins(Arrays.asList(
                 "http://localhost:4200",
-                "https://quejapp-frontend.vercel.app/"));
+                "https://quejapi-front-lww2.vercel.app",
+                allowedOrigins));
 
         // Métodos HTTP permitidos
         configuration.setAllowedMethods(Arrays.asList(
