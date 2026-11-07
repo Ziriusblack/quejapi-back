@@ -8,6 +8,8 @@ import org.springframework.data.mongodb.repository.Query;
 
 import com.quejapp.quejapi.model.Complaint;
 
+import java.util.List;
+
 public interface ComplaintRepository extends MongoRepository<Complaint, String> {
     Page<Complaint> findByUserOrderByRecievedDateDesc(String usuarioId, Pageable pageable);
     Page<Complaint> findAllByOrderByRecievedDateDesc(Pageable pageable);
@@ -63,5 +65,9 @@ public interface ComplaintRepository extends MongoRepository<Complaint, String> 
     // Filter by status only
     @Query("{ 'status': ?0 }")
     Page<Complaint> findByStatus(Integer status,  Pageable pageable);
+
+    //Trae solo las PQRS que NO estén Resueltas (2) ni Cerradas (3)
+    @Query("{ 'status': { $nin: [2, 3] } }")
+    List<Complaint> findActiveComplaints();
 
 }

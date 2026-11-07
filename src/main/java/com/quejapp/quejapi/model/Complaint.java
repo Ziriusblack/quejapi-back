@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.mongodb.core.index.Indexed;
 
 @Data
 @Builder
@@ -18,12 +19,16 @@ import lombok.NoArgsConstructor;
 public class Complaint {
     @Id
     private String id; 
-    private String reference;   
+    private String reference;
+
+    @Indexed
     private Date recievedDate;
     private Integer type; 
     private Integer category;
     private String subject;  
     private String description;
+    
+    @Indexed
     private Integer status;
     private String user; 
     private Profile userProfile;     

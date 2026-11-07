@@ -23,13 +23,11 @@ public class PQRSRecommendationService {
 
     public List<PriorityComplaintDTO> getPrioritizedComplaints() {
 
-        List<Complaint> complaints = complaintRepository.findAll();
+        List<Complaint> complaints = complaintRepository.findActiveComplaints();
 
         return complaints.stream()
 
-                // Solo abiertas
-                .filter(c -> c.getStatus() != null && c.getStatus() != 2 && c.getStatus() != 3)
-
+             
                 .map(c -> {
 
                     int score = calculatePriority(c);

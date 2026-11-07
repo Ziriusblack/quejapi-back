@@ -1,10 +1,12 @@
 package com.quejapp.quejapi.service;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.crypto.SecretKey;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
@@ -13,19 +15,22 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.impl.lang.Function;
 import io.jsonwebtoken.lang.Objects;
+import io.jsonwebtoken.security.Keys;
 import io.micrometer.common.util.StringUtils;
 
-
 @Service
-public class JwtService {    
-    private SecretKey key;
+public class JwtService {
+
+    // 1. Inyectamos la clave secreta desde el application.properties
+    @Value("${jwt.secret}")
+    private String secretKey;
 
     private final UserDetailsService userDetailsService;
 
     public JwtService(UserDetailsService userDetailsService){
         this.userDetailsService = userDetailsService;
-        this.key = Jwts.SIG.HS256.key().build();
-    }    
+        // Eliminamos la generación de clave aleatoria que estaba aquí
+    }
 
     public String extractUserName(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -47,7 +52,7 @@ public class JwtService {
                 .subject(userDetails.getUsername())
                 .claim("roles", userDetails.getAuthorities())
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 24)) // 1 day
+                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24)) // 1 day
                 .signWith(getSignInKey())
                 .compact();
     }
@@ -74,10 +79,8 @@ public class JwtService {
     }
 
     private SecretKey getSignInKey() {
-        if (key== null) {
-            key = Jwts.SIG.HS256.key().build();
-        }               
-        return key;
+        byte[] keyBytes = secretKey.getBytes(StandardCharsets.UTF_8);
+        return Keys.hmacShaKeyFor(keyBytes);
     }
 
     public String generateRefresh(Map<String, Objects> extraClaims, UserDetails userDetails) {
@@ -88,7 +91,6 @@ public class JwtService {
                 .expiration(new Date(System.currentTimeMillis() + 604800000))
                 .signWith(getSignInKey())
                 .compact();
-
     }
 
     public String getEmailFromToken(String token) {
@@ -103,5 +105,4 @@ public class JwtService {
         }
         return false;
     }
-
 }
