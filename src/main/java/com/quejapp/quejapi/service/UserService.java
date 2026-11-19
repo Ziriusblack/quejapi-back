@@ -20,7 +20,7 @@ import com.quejapp.quejapi.model.Trace;
 import com.quejapp.quejapi.model.User;
 import com.quejapp.quejapi.repository.ComplaintRepository;
 import com.quejapp.quejapi.repository.UserRepository;
-
+import org.springframework.cache.annotation.CacheEvict;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -30,6 +30,7 @@ public class UserService {
     private final UserRepository usersRepo; 
     private final WekaService wekaService;
 
+    @CacheEvict(value = "dashboardStats", allEntries = true)
     public Complaint createComplaintForUser(Complaint complaint) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String mail = auth.getName();
