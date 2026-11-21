@@ -112,6 +112,7 @@ public class SecurityConfiguration {
         configuration.setAllowedOrigins(Arrays.asList(
                 "http://localhost:4200",
                 "https://quejapi-front-lww2.vercel.app",
+                "http://localhost:56898",
                 allowedOrigins));
 
         // Métodos HTTP permitidos
