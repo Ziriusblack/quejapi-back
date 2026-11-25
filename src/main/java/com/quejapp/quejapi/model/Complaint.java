@@ -43,6 +43,8 @@ public class Complaint {
     private Date updatedDate;
     private List<Trace> traceability;
     private String prediction; // New field for prediction
+    private String predictedPriority;
+    private Double priorityConfidence;
 
     public void addTrace(Trace trace) {
         this.traceability.add(trace);        

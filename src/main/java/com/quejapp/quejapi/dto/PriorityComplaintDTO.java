@@ -20,4 +20,8 @@ public class PriorityComplaintDTO {
     private Integer type;
 
     private Integer daysOpen;
+
+    // Campos de la Red Neuronal (TensorFlow)
+    private String predictedPriority;
+    private Double priorityConfidence;
 }

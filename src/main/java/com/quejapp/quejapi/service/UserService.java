@@ -4,6 +4,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Random;
+
+import com.quejapp.quejapi.dto.NeuralPriorityResponseDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -29,6 +31,7 @@ public class UserService {
     private final ComplaintRepository complaintsRepo;
     private final UserRepository usersRepo; 
     private final WekaService wekaService;
+    private final NeuralPriorityService neuralPriorityService;
 
     @CacheEvict(value = "dashboardStats", allEntries = true)
     public Complaint createComplaintForUser(Complaint complaint) {
@@ -40,7 +43,10 @@ public class UserService {
             System.out.println("❌ Usuario no encontrado en la base de datos.");
             return new RuntimeException("Usuario no encontrado");
         });
-      
+        NeuralPriorityResponseDTO nnResult = neuralPriorityService.predictFromComplaint(complaint, 0);
+        complaint.setPredictedPriority(nnResult.getPriority());
+        complaint.setPriorityConfidence(nnResult.getConfidence());
+
         return complaintsRepo.save(initializeComplaint(complaint, user));
     }
 
