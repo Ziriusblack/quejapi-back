@@ -23,7 +23,8 @@ public class NeuralPriorityService {
 
     public NeuralPriorityResponseDTO predictPriority(NeuralPriorityRequestDTO request) {
         try {
-            String endpoint = nnServiceUrl + "/predict-priority";
+            String baseUrl = nnServiceUrl.replaceAll("/+$", "");
+            String endpoint = baseUrl + "/predict-priority";
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
@@ -38,6 +39,7 @@ public class NeuralPriorityService {
 
             return response.getBody();
         } catch (Exception e) {
+            System.err.println("Error llamando a NeuralPriorityService (" + nnServiceUrl + "): " + e.getMessage());
             // Respaldo seguro si el microservicio Python no está disponible
             return new NeuralPriorityResponseDTO(
                     "MEDIA",
